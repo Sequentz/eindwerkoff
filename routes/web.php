@@ -25,4 +25,10 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+    Route::get('/themes', function () {
+        return view('themes');
+    })->name('themes');
+    Route::get('/words', function () {
+        return view('words');
+    })->name('words');
 });
