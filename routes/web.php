@@ -33,4 +33,6 @@ Route::middleware([
 
     Route::resource('themes', ThemeController::class);
     Route::resource('words', WordController::class);
+    Route::delete('/words', [WordController::class, 'massDelete'])->name('words.mass-delete');
+    Route::delete('/themes', [ThemeController::class, 'massDelete'])->name('themes.mass-delete');
 });

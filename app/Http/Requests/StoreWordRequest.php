@@ -22,17 +22,28 @@ class StoreWordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:words,name',
+            // Validate for each word in the array
+            'words' => 'required|array',
+            'words.*.name' => 'required|string|max:255|unique:words,name',
+            'words.*.themes' => 'nullable|array',
+            'words.*.themes.*' => 'exists:themes,id', // Validate that each selected theme exists in the themes table
         ];
     }
 
+    /**
+     * Custom error messages for validation.
+     *
+     * @return array
+     */
     public function messages(): array
     {
         return [
-            'name.required' => 'The word name is required.',
-            'name.string' => 'The word name must be a valid string.',
-            'name.max' => 'The word name cannot exceed 255 characters.',
-            'name.unique' => 'This word name already exists. Please choose a different name.',
+            'words.required' => 'Please add at least one word.',
+            'words.*.name.required' => 'The word name is required.',
+            'words.*.name.string' => 'The word name must be a valid string.',
+            'words.*.name.max' => 'The word name cannot exceed 255 characters.',
+            'words.*.name.unique' => 'This word name already exists. Please choose a different name.',
+            'words.*.themes.exists' => 'Selected themes are not valid.',
         ];
     }
 }

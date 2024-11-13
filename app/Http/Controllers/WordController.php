@@ -31,24 +31,27 @@ class WordController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+
     public function store(StoreWordRequest $request)
     {
-        // Validate the request
-        $validated = $request->validated();
+        $words = $request->input('words');
 
-        // Create the new word
-        $word = Word::create([
-            'name' => $validated['name'],
-        ]);
+        foreach ($words as $wordData) {
+            // Create a new word record
+            $word = Word::create([
+                'name' => $wordData['name'],
+            ]);
 
-        // Check if themes are selected
-        if ($request->has('themes')) {
-            // Attach selected themes to the word (many-to-many relationship)
-            $word->themes()->attach($request->themes);
+            // Attach selected themes if any
+            if (isset($wordData['themes'])) {
+                $word->themes()->sync($wordData['themes']);
+            }
         }
 
-        return redirect()->route('words.index')->with('success', 'Word created successfully.');
+        return redirect()->route('words.index')->with('success', 'Words added successfully!');
     }
+
 
 
 
@@ -92,5 +95,29 @@ class WordController extends Controller
     {
         $word->delete();
         return back()->with('success', 'Word deleted successfully.');
+    }
+
+    public function massDelete(Request $request)
+    {
+        // Validate the request to ensure 'words' is an array of valid word IDs
+        $this->validate($request, [
+            'words' => 'required|array|min:1',
+            'words.*' => 'exists:words,id', // Ensure each word ID exists
+        ]);
+
+        // Get the count of the selected words
+        $deletedCount = count($request->words);
+
+        // Delete the selected words
+        Word::destroy($request->words);
+
+        // Check if only one word was deleted
+        if ($deletedCount === 1) {
+            // Redirect to the words index page with a single word success message
+            return redirect()->route('words.index')->with('success', 'Word deleted successfully.');
+        }
+
+        // Redirect to the words index page with a multiple words success message
+        return redirect()->route('words.index')->with('success', 'Selected words deleted successfully.');
     }
 }

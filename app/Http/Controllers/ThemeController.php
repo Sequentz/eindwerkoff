@@ -76,13 +76,11 @@ class ThemeController extends Controller
         // Add new words (those dynamically added)
         if ($request->has('words_to_add')) {
             foreach ($request->input('words_to_add') as $newWordName) {
-                // Check if the word already exists
                 $newWord = Word::firstOrCreate(['name' => $newWordName]);
-
-                // Attach the new word to the theme
-                $theme->words()->attach($newWord->id);
+                $theme->words()->syncWithoutDetaching([$newWord->id]);
             }
         }
+
 
         return redirect()->route('themes.index')->with('success', 'Theme updated successfully.');
     }
@@ -96,5 +94,19 @@ class ThemeController extends Controller
     {
         $theme->delete();
         return redirect()->route('themes.index')->with('success', 'Theme deleted successfully.');
+    }
+    public function massDelete(Request $request)
+    {
+        $this->validate($request, [
+            'themes' => 'required|array|min:1',
+            'themes.*' => 'exists:themes,id',
+        ]);
+
+        try {
+            Theme::destroy($request->themes);
+            return redirect()->route('themes.index')->with('success', 'Themes deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('themes.index')->with('error', 'An error occurred while deleting themes.');
+        }
     }
 }
