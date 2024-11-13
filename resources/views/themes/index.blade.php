@@ -4,7 +4,6 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Themes') }}
             </h2>
-            <!-- Add Theme Button -->
             <a href="{{ route('themes.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Add Theme
             </a>
@@ -14,6 +13,22 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
+
+                @if(session('success'))
+                <div class="bg-green-500 text-white p-4 mb-4 rounded">
+                    {{ session('success') }}
+                </div>
+                @elseif(session('error'))
+                <div class="bg-red-500 text-white p-4 mb-4 rounded">
+                    {{ session('error') }}
+                </div>
+                @endif
+
+                <form method="GET" action="{{ route('themes.index') }}" class="mb-4">
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Search themes..." class="border border-gray-300 p-2 rounded">
+                    <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded">Search</button>
+                </form>
 
                 @if($themes->count() > 0)
                 <form action="{{ route('themes.mass-delete') }}" method="POST">
@@ -64,6 +79,9 @@
                 @else
                 <div class="text-center py-6">
                     <p class="text-gray-500">No themes found.</p>
+                    <a href="{{ route('themes.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Add Theme
+                    </a>
                 </div>
                 @endif
             </div>
@@ -71,11 +89,16 @@
     </div>
 
     <script>
-        // Select/Deselect All checkboxes
-        document.getElementById('select_all_themes').addEventListener('change', function() {
-            var checkboxes = document.querySelectorAll('.theme-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
+        const selectAllCheckbox = document.getElementById('select_all_themes');
+        const themeCheckboxes = document.querySelectorAll('.theme-checkbox');
+
+        selectAllCheckbox.addEventListener('change', function() {
+            themeCheckboxes.forEach(checkbox => checkbox.checked = this.checked);
+        });
+
+        themeCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                selectAllCheckbox.checked = Array.from(themeCheckboxes).every(cb => cb.checked);
             });
         });
     </script>

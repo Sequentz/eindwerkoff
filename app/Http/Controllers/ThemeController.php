@@ -8,15 +8,20 @@ use App\Http\Requests\StoreThemeRequest;
 use App\Http\Requests\UpdateThemeRequest;
 use App\Models\Word;
 
-
 class ThemeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $themes = Theme::sortable()->paginate(10);
+        $query = Theme::query();
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->input('search') . '%');
+        }
+
+        $themes = $query->sortable()->paginate(10);
         return view('themes.index', compact('themes'));
     }
 
@@ -29,7 +34,6 @@ class ThemeController extends Controller
         return view('themes.create', compact('words'));
     }
 
-
     /**
      * Store a newly created resource in storage.
      */
@@ -40,20 +44,22 @@ class ThemeController extends Controller
         if ($request->has('word_ids')) {
             $theme->words()->attach($request->input('word_ids'));
         }
+
         return redirect()->route('themes.index')->with('success', 'Theme created successfully.');
     }
-
 
     /**
      * Display the specified resource.
      */
     public function show(Theme $theme)
     {
-
         $theme->load('words');
         return view('themes.show', compact('theme'));
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     */
     public function edit(Theme $theme)
     {
         $theme->load('words');
@@ -68,12 +74,10 @@ class ThemeController extends Controller
     {
         $theme->update($request->validated());
 
-        // Attach selected words
         if ($request->has('word_ids')) {
-            $theme->words()->sync($request->input('word_ids')); // Sync existing words
+            $theme->words()->sync($request->input('word_ids'));
         }
 
-        // Add new words (those dynamically added)
         if ($request->has('words_to_add')) {
             foreach ($request->input('words_to_add') as $newWordName) {
                 $newWord = Word::firstOrCreate(['name' => $newWordName]);
@@ -81,11 +85,8 @@ class ThemeController extends Controller
             }
         }
 
-
         return redirect()->route('themes.index')->with('success', 'Theme updated successfully.');
     }
-
-
 
     /**
      * Remove the specified resource from storage.
@@ -95,6 +96,10 @@ class ThemeController extends Controller
         $theme->delete();
         return redirect()->route('themes.index')->with('success', 'Theme deleted successfully.');
     }
+
+    /**
+     * Remove the specified resources from storage in bulk.
+     */
     public function massDelete(Request $request)
     {
         $this->validate($request, [
