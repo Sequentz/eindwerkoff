@@ -3,28 +3,36 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreThemeRequest extends FormRequest
+class UpdateThemeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return true; // Adjust to your authorization logic if needed
     }
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:themes,name',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('themes', 'name')->ignore($this->route('theme')),
+            ],
         ];
     }
+
+    /**
+     * Customize the error messages for validation rules.
+     */
     public function messages(): array
     {
         return [

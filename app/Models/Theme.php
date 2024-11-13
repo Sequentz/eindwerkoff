@@ -8,15 +8,15 @@ use Kyslik\ColumnSortable\Sortable;
 
 class Theme extends Model
 {
-    use HasFactory;
-    use Sortable;
+    use HasFactory, Sortable;
 
-    public $sortable = [
-        'id',
-        'theme',
+    protected $fillable = ['name'];
 
-    ];
-    protected $fillable = [
-        'name',
-    ];
+    public $sortable = ['id', 'name'];
+
+    // Define the many-to-many relationship
+    public function words()
+    {
+        return $this->belongsToMany(Word::class, 'words_theme');
+    }
 }

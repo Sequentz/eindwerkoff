@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Theme;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreThemeRequest;
+use App\Http\Requests\UpdateThemeRequest;
+use App\Models\Word;
+
 
 class ThemeController extends Controller
 {
@@ -21,56 +25,63 @@ class ThemeController extends Controller
      */
     public function create()
     {
-        return view('themes.create');
+        $words = Word::all();
+        return view('themes.create', compact('words'));
     }
+
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreThemeRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
+        $theme = Theme::create($request->validated());
 
-        Theme::create($request->all());
-        return redirect()->route('themes.index')->with('success', 'Theme created successfully');
+        if ($request->has('word_ids')) {
+            $theme->words()->attach($request->input('word_ids'));
+        }
+        return redirect()->route('themes.index')->with('success', 'Theme created successfully.');
     }
+
 
     /**
      * Display the specified resource.
      */
     public function show(Theme $theme)
     {
+
+        $theme->load('words');
         return view('themes.show', compact('theme'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Theme $theme)
     {
-        return view('themes.edit', compact('theme'));
+        $theme->load('words');
+        $words = Word::all();
+        return view('themes.edit', compact('theme', 'words'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Theme $theme)
+    public function update(UpdateThemeRequest $request, Theme $theme)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
+        $theme->update($request->validated());
 
-        $theme->update($request->all());
-        return redirect()->route('themes.index')->with('success', 'Theme updated successfully');
+        if ($request->has('word_ids')) {
+            $theme->words()->sync($request->input('word_ids'));
+        }
+
+        return redirect()->route('themes.index')->with('success', 'Theme updated successfully.');
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Theme $theme)
     {
-        // 
+        $theme->delete();
+        return redirect()->route('themes.index')->with('success', 'Theme deleted successfully.');
     }
 }

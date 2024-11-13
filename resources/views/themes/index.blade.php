@@ -34,7 +34,7 @@
                         @foreach ($themes as $theme)
                         <tr>
                             <td class="py-2 px-4 border-b text-center">{{ $theme->id }}</td>
-                            <td class="py-2 px-4 border-b text-center">{{ $theme->theme }}</td>
+                            <td class="py-2 px-4 border-b text-center">{{ $theme->name }}</td>
                             <td class="py-2 px-4 border-b text-center space-x-2">
                                 <!-- Show Button -->
                                 <a href="{{ route('themes.show', $theme->id) }}" class="text-indigo-600 hover:text-indigo-900 font-bold">Show</a>

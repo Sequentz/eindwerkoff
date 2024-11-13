@@ -1,6 +1,3 @@
-<div>
-    <!-- If you do not have a consistent goal in life, you can not live it in a consistent way. - Marcus Aurelius -->
-</div>
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -17,10 +14,24 @@
 
                     <div class="mb-4">
                         <label for="theme" class="block text-gray-700 text-sm font-bold mb-2">Theme Name:</label>
-                        <input type="text" id="theme" name="theme" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ old('theme', $theme->theme) }}" required>
-                        @error('theme')
+                        <input type="text" id="theme" name="name" value="{{ old('name', $theme->name) }}" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline">
+                        @error('name')
                         <p class="text-red-500 text-xs italic mt-2">{{ $message }}</p>
                         @enderror
+                    </div>
+
+                    <!-- Word Selection -->
+                    <div class="mb-4">
+                        <label for="word_ids" class="block text-gray-700 text-sm font-bold mb-2">Select Words:</label>
+                        <select name="word_ids[]" id="word_ids" multiple class="w-full border rounded p-2">
+                            @foreach($words as $word)
+                            <option value="{{ $word->id }}"
+                                {{ in_array($word->id, $theme->words->pluck('id')->toArray()) ? 'selected' : '' }}>
+                                {{ $word->name }}
+                            </option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <div class="flex items-center justify-between">
