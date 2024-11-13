@@ -10,10 +10,9 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-12 page-content">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
-
                 @if(session('success'))
                 <div class="bg-green-500 text-white p-4 mb-4 rounded">
                     {{ session('success') }}
@@ -31,7 +30,7 @@
                 </form>
 
                 @if($themes->count() > 0)
-                <form action="{{ route('themes.mass-delete') }}" method="POST">
+                <form id="mass-delete-form" action="{{ route('themes.mass-delete') }}" method="POST">
                     @csrf
                     @method('DELETE')
 
@@ -50,7 +49,7 @@
                             @foreach ($themes as $theme)
                             <tr>
                                 <td class="py-2 px-4 border-b text-center">
-                                    <input type="checkbox" name="themes[]" value="{{ $theme->id }}" class="theme-checkbox">
+                                    <input type="checkbox" name="themes[]" value="{{ $theme->id }}" data-name="{{ $theme->name }}" class="theme-checkbox">
                                 </td>
                                 <td class="py-2 px-4 border-b text-center">{{ $theme->id }}</td>
                                 <td class="py-2 px-4 border-b text-center">{{ $theme->name }}</td>
@@ -69,8 +68,8 @@
                     </table>
 
                     <div class="flex items-center justify-between p-4">
-                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                            onclick="return confirm('Are you sure you want to delete selected themes?')">
+                        <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                            onclick="showDeleteModal()">
                             Delete Selected Themes
                         </button>
                     </div>
@@ -79,27 +78,74 @@
                 @else
                 <div class="text-center py-6">
                     <p class="text-gray-500">No themes found.</p>
-                    <a href="{{ route('themes.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Add Theme
-                    </a>
                 </div>
                 @endif
             </div>
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 flex items-center justify-center hidden z-50">
+        <div class="absolute inset-0 bg-gray-900 opacity-50 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-lg shadow-lg max-w-sm w-full p-6">
+            <h2 class="text-lg font-semibold mb-4">Confirm Deletion</h2>
+            <p class="text-gray-600 mb-6">
+                Are you sure you want to delete the selected themes:
+                <span id="selectedThemes" class="font-semibold text-red-500"></span>?
+            </p>
+            <div class="flex justify-end space-x-4">
+                <button onclick="hideDeleteModal()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    Cancel
+                </button>
+                <button onclick="confirmMassDelete()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Blur effect for page content when modal is open */
+        .blur {
+            filter: blur(5px);
+        }
+    </style>
+
     <script>
         const selectAllCheckbox = document.getElementById('select_all_themes');
         const themeCheckboxes = document.querySelectorAll('.theme-checkbox');
+        const pageContent = document.querySelector('.page-content');
 
+        // Toggle Select All
         selectAllCheckbox.addEventListener('change', function() {
             themeCheckboxes.forEach(checkbox => checkbox.checked = this.checked);
         });
 
-        themeCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                selectAllCheckbox.checked = Array.from(themeCheckboxes).every(cb => cb.checked);
-            });
-        });
+        // Collect selected theme names and show modal
+        function showDeleteModal() {
+            const selectedNames = Array.from(themeCheckboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.getAttribute('data-name'));
+
+            if (selectedNames.length === 0) {
+                alert("Please select at least one theme to delete.");
+                return;
+            }
+
+            document.getElementById('selectedThemes').textContent = selectedNames.join(', ');
+            document.getElementById('deleteModal').classList.remove('hidden');
+            pageContent.classList.add('blur');
+        }
+
+        // Hide modal and remove blur
+        function hideDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+            pageContent.classList.remove('blur');
+        }
+
+        // Confirm deletion and submit the form
+        function confirmMassDelete() {
+            document.getElementById('mass-delete-form').submit();
+        }
     </script>
 </x-app-layout>
