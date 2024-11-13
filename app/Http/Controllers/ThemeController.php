@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreThemeRequest;
 use App\Http\Requests\UpdateThemeRequest;
 use App\Models\Word;
+use Illuminate\Support\Facades\DB;
 
 class ThemeController extends Controller
 {
@@ -30,23 +31,32 @@ class ThemeController extends Controller
      */
     public function create()
     {
-        $words = Word::all();
-        return view('themes.create', compact('words'));
+        $words = Word::all(); // All words for checkboxes
+        $themes = Theme::all(); // Fetch all themes for the checkbox list (if you need them)
+        return view('themes.create', compact('words', 'themes')); // Pass both to the view
     }
+
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(StoreThemeRequest $request)
     {
-        $theme = Theme::create($request->validated());
+        // Retrieve the validated themes data
+        $themes = $request->input('themes');
 
-        if ($request->has('word_ids')) {
-            $theme->words()->attach($request->input('word_ids'));
-        }
+        // Start a transaction to ensure all themes are created successfully
+        DB::transaction(function () use ($themes) {
+            foreach ($themes as $themeData) {
+                Theme::create([
+                    'name' => $themeData['name'],
+                ]);
+            }
+        });
 
-        return redirect()->route('themes.index')->with('success', 'Theme created successfully.');
+        return redirect()->route('themes.index')->with('success', 'Themes added successfully!');
     }
+
 
     /**
      * Display the specified resource.

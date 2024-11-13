@@ -22,16 +22,19 @@ class StoreThemeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:themes,name',
+            'themes' => 'required|array|min:1',
+            'themes.*.name' => 'required|string|max:255|unique:themes,name', // Validate each theme name
         ];
     }
+
     public function messages(): array
     {
         return [
-            'name.required' => 'The theme name is required.',
-            'name.string' => 'The theme name must be a valid string.',
-            'name.max' => 'The theme name cannot exceed 255 characters.',
-            'name.unique' => 'This theme name already exists. Please choose a different name.',
+            'themes.required' => 'Please add at least one theme.',
+            'themes.*.name.required' => 'Each theme must have a name.',
+            'themes.*.name.string' => 'The theme name must be a valid string.',
+            'themes.*.name.max' => 'The theme name cannot exceed 255 characters.',
+            'themes.*.name.unique' => 'This theme name already exists. Please choose a different name.',
         ];
     }
 }
