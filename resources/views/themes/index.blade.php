@@ -56,11 +56,10 @@
                                 <td class="py-2 px-4 border-b text-center space-x-2">
                                     <a href="{{ route('themes.show', $theme->id) }}" class="text-indigo-600 hover:text-indigo-900 font-bold">Show</a>
                                     <a href="{{ route('themes.edit', $theme->id) }}" class="text-blue-600 hover:text-blue-900 font-bold">Edit</a>
-                                    <form action="{{ route('themes.destroy', $theme->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900 font-bold" onclick="return confirm('Are you sure?')">Delete</button>
-                                    </form>
+                                    <button type="button" class="text-red-600 hover:text-red-900 font-bold"
+                                        data-id="{{ $theme->id }}" data-name="{{ $theme->name }}" onclick="showDeleteModal(this)">
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                             @endforeach
@@ -115,6 +114,8 @@
         const selectAllCheckbox = document.getElementById('select_all_themes');
         const themeCheckboxes = document.querySelectorAll('.theme-checkbox');
         const pageContent = document.querySelector('.page-content');
+        let deleteMode = 'mass'; // Track if it's mass delete or single delete
+        let singleDeleteId = null;
 
         // Toggle Select All
         selectAllCheckbox.addEventListener('change', function() {
@@ -122,17 +123,28 @@
         });
 
         // Collect selected theme names and show modal
-        function showDeleteModal() {
-            const selectedNames = Array.from(themeCheckboxes)
-                .filter(checkbox => checkbox.checked)
-                .map(checkbox => checkbox.getAttribute('data-name'));
+        function showDeleteModal(button = null) {
+            if (button) {
+                // Single delete
+                deleteMode = 'single';
+                singleDeleteId = button.getAttribute('data-id');
+                const themeName = button.getAttribute('data-name');
+                document.getElementById('selectedThemes').textContent = themeName;
+            } else {
+                // Mass delete
+                deleteMode = 'mass';
+                const selectedNames = Array.from(themeCheckboxes)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.getAttribute('data-name'));
 
-            if (selectedNames.length === 0) {
-                alert("Please select at least one theme to delete.");
-                return;
+                if (selectedNames.length === 0) {
+                    alert("Please select at least one theme to delete.");
+                    return;
+                }
+
+                document.getElementById('selectedThemes').textContent = selectedNames.join(', ');
             }
 
-            document.getElementById('selectedThemes').textContent = selectedNames.join(', ');
             document.getElementById('deleteModal').classList.remove('hidden');
             pageContent.classList.add('blur');
         }
@@ -145,7 +157,31 @@
 
         // Confirm deletion and submit the form
         function confirmMassDelete() {
-            document.getElementById('mass-delete-form').submit();
+            if (deleteMode === 'single') {
+                // Create and submit a form for single deletion
+                const form = document.createElement('form');
+                form.action = `themes/${singleDeleteId}`;
+                form.method = 'POST';
+
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = '{{ csrf_token() }}';
+
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+
+                form.appendChild(csrfInput);
+                form.appendChild(methodInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                // Mass delete
+                document.getElementById('mass-delete-form').submit();
+            }
         }
     </script>
 </x-app-layout>
