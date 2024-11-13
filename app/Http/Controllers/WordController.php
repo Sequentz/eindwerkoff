@@ -33,10 +33,24 @@ class WordController extends Controller
      */
     public function store(StoreWordRequest $request)
     {
+        // Validate the request
+        $validated = $request->validated();
 
-        Word::create($request->validated());
+        // Create the new word
+        $word = Word::create([
+            'name' => $validated['name'],
+        ]);
+
+        // Check if themes are selected
+        if ($request->has('themes')) {
+            // Attach selected themes to the word (many-to-many relationship)
+            $word->themes()->attach($request->themes);
+        }
+
         return redirect()->route('words.index')->with('success', 'Word created successfully.');
     }
+
+
 
     /**
      * Display the specified resource.

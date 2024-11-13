@@ -68,12 +68,25 @@ class ThemeController extends Controller
     {
         $theme->update($request->validated());
 
+        // Attach selected words
         if ($request->has('word_ids')) {
-            $theme->words()->sync($request->input('word_ids'));
+            $theme->words()->sync($request->input('word_ids')); // Sync existing words
+        }
+
+        // Add new words (those dynamically added)
+        if ($request->has('words_to_add')) {
+            foreach ($request->input('words_to_add') as $newWordName) {
+                // Check if the word already exists
+                $newWord = Word::firstOrCreate(['name' => $newWordName]);
+
+                // Attach the new word to the theme
+                $theme->words()->attach($newWord->id);
+            }
         }
 
         return redirect()->route('themes.index')->with('success', 'Theme updated successfully.');
     }
+
 
 
     /**
