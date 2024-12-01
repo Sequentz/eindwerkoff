@@ -1,0 +1,74 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "WoordzoekerAPI Documentatie",
+        "description": "Documentatie voor GET endpoints",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/themes": {
+            "get": {
+                "summary": "Lijst van thema's ophalen",
+                "description": "Get all themes.",
+                "operationId": "711e38a9ca5ae99bed4d134dc2e758c0",
+                "responses": {
+                    "200": {
+                        "description": "Succesvol ophalen van alle thema's",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Thema naam"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/words": {
+            "get": {
+                "summary": "Lijst van woorden ophalen",
+                "description": "Get all words.",
+                "operationId": "691c03c7a1c8fead4735db90abd0b01d",
+                "responses": {
+                    "200": {
+                        "description": "Succesvol ophalen van woorden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "word": {
+                                                "type": "string",
+                                                "example": "Woord voorbeeld"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
