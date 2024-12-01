@@ -47,4 +47,26 @@ class ThemeApiController extends Controller
     {
         //
     }
+    public function getWordsForTheme($themeId)
+    {
+        $theme = Theme::with('words')->find($themeId);
+
+        if (!$theme) {
+            return response()->json(['error' => 'Theme not found'], 404);
+        }
+
+        // Transform words to only include id, name, and theme_id
+        $words = $theme->words->map(function ($word) {
+            return [
+                'id' => $word->id,
+                'name' => $word->name,
+                'theme_id' => $word->pivot->theme_id,
+            ];
+        });
+
+        return response()->json([
+            'theme' => $theme->name,
+            'words' => $words,
+        ]);
+    }
 }

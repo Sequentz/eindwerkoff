@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ThemeApiController;
 
 
 /*
@@ -22,4 +23,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::prefix('v1')->group(function () {
     Route::apiResource('words', \App\Http\Controllers\WordApiController::class);
     Route::apiResource('themes', \App\Http\Controllers\ThemeApiController::class);
+    Route::get('themes/{themeId}/words', [ThemeApiController::class, 'getWordsForTheme']);
 });

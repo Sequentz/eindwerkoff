@@ -14,9 +14,9 @@ class Theme extends Model
 
     public $sortable = ['id', 'name'];
 
-    // Define the many-to-many relationship
+
     public function words()
     {
-        return $this->belongsToMany(Word::class, 'words_theme');
+        return $this->belongsToMany(Word::class, 'words_theme', 'theme_id', 'word_id');
     }
 }
