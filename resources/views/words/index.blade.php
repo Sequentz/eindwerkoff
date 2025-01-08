@@ -1,18 +1,18 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold leading-tight text-gray-800">
                 {{ __('Words') }}
             </h2>
-            <a href="{{ route('words.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <a href="{{ route('words.create') }}" class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">
                 Add Word
             </a>
         </div>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="p-6 overflow-hidden bg-white shadow-xl sm:rounded-lg">
 
                 @if(session('success'))
                 <div class="mb-4 text-green-500">
@@ -28,42 +28,42 @@
                     <table class="w-full bg-white">
                         <thead>
                             <tr>
-                                <th class="py-2 px-4 border-b text-center font-semibold text-gray-600">
+                                <th class="px-4 py-2 font-semibold text-center text-gray-600 border-b">
                                     <input type="checkbox" id="select_all" class="select-all-checkbox">
                                 </th>
-                                <th class="py-2 px-4 border-b text-center font-semibold text-gray-600">ID</th>
-                                <th class="py-2 px-4 border-b text-center font-semibold text-gray-600">Word</th>
-                                <th class="py-2 px-4 border-b text-center font-semibold text-gray-600">Themes</th>
-                                <th class="py-2 px-4 border-b text-center font-semibold text-gray-600">Actions</th>
+                                <th class="px-4 py-2 font-semibold text-center text-gray-600 border-b">ID</th>
+                                <th class="px-4 py-2 font-semibold text-center text-gray-600 border-b">Word</th>
+                                <th class="px-4 py-2 font-semibold text-center text-gray-600 border-b">Themes</th>
+                                <th class="px-4 py-2 font-semibold text-center text-gray-600 border-b">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($words as $word)
                             <tr>
-                                <td class="py-2 px-4 border-b text-center">
+                                <td class="px-4 py-2 text-center border-b">
                                     <input type="checkbox" name="words[]" value="{{ $word->id }}" class="word-checkbox">
                                 </td>
-                                <td class="py-2 px-4 border-b text-center">{{ $word->id }}</td>
-                                <td class="py-2 px-4 border-b text-center">{{ $word->name }}</td>
-                                <td class="py-2 px-4 border-b text-center">
+                                <td class="px-4 py-2 text-center border-b">{{ $word->id }}</td>
+                                <td class="px-4 py-2 text-center border-b">{{ $word->name }}</td>
+                                <td class="px-4 py-2 text-center border-b">
                                     @if($word->themes->count() > 1)
-                                    <span class="inline-block bg-gray-200 px-2 py-1 text-xs font-semibold text-gray-700 rounded">
+                                    <span class="inline-block px-2 py-1 text-xs font-semibold text-gray-700 bg-gray-200 rounded">
                                         {{ $word->themes->count() }} Themes
                                     </span>
                                     @elseif($word->themes->count() === 1)
-                                    <span class="inline-block bg-gray-200 px-2 py-1 text-xs font-semibold text-gray-700 rounded">
+                                    <span class="inline-block px-2 py-1 text-xs font-semibold text-gray-700 bg-gray-200 rounded">
                                         {{ $word->themes->first()->name }}
                                     </span>
                                     @else
-                                    <span class="inline-block bg-gray-200 px-2 py-1 text-xs font-semibold text-gray-700 rounded">
+                                    <span class="inline-block px-2 py-1 text-xs font-semibold text-gray-700 bg-gray-200 rounded">
                                         No Themes
                                     </span>
                                     @endif
                                 </td>
-                                <td class="py-2 px-4 border-b text-center space-x-2">
-                                    <a href="{{ route('words.show', $word->id) }}" class="text-indigo-600 hover:text-indigo-900 font-bold">Show</a>
-                                    <a href="{{ route('words.edit', $word->id) }}" class="text-blue-600 hover:text-blue-900 font-bold">Edit</a>
-                                    <button type="button" class="text-red-600 hover:text-red-900 font-bold delete-button" data-word-name="{{ $word->name }}" data-word-id="{{ $word->id }}">Delete</button>
+                                <td class="px-4 py-2 space-x-2 text-center border-b">
+                                    <a href="{{ route('words.show', $word->id) }}" class="font-bold text-indigo-600 hover:text-indigo-900">Show</a>
+                                    <a href="{{ route('words.edit', $word->id) }}" class="font-bold text-blue-600 hover:text-blue-900">Edit</a>
+                                    <button type="button" class="font-bold text-red-600 hover:text-red-900 delete-button" data-word-name="{{ $word->name }}" data-word-id="{{ $word->id }}">Delete</button>
                                 </td>
                             </tr>
                             @endforeach
@@ -71,14 +71,14 @@
                     </table>
 
                     <div class="flex items-center justify-between p-4">
-                        <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" id="delete-selected-button" disabled>
+                        <button type="button" class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" id="delete-selected-button" disabled>
                             Delete Selected Words
                         </button>
                     </div>
                     {{ $words->links() }}
                 </form>
                 @else
-                <div class="text-center py-6">
+                <div class="py-6 text-center">
                     <p class="text-gray-500">No words found.</p>
                 </div>
                 @endif
@@ -87,13 +87,13 @@
     </div>
 
     <!-- Modal -->
-    <div id="confirmation-modal" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
-        <div class="bg-white p-6 rounded shadow-xl">
-            <h3 class="text-lg font-bold mb-4" id="modal-title">Are you sure you want to delete these words?</h3>
+    <div id="confirmation-modal" class="fixed inset-0 flex items-center justify-center hidden bg-gray-900 bg-opacity-50">
+        <div class="p-6 bg-white rounded shadow-xl">
+            <h3 class="mb-4 text-lg font-bold" id="modal-title">Are you sure you want to delete these words?</h3>
             <p id="modal-message" class="mb-4">This action cannot be undone.</p>
             <div class="flex justify-end space-x-4">
-                <button id="cancel-delete" class="bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded">Cancel</button>
-                <button id="confirm-delete" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Delete</button>
+                <button id="cancel-delete" class="px-4 py-2 text-gray-800 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+                <button id="confirm-delete" class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700">Delete</button>
             </div>
         </div>
     </div>
