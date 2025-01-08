@@ -24,6 +24,7 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+    SetEnvIf X-Forwarded-Proto https HTTPS=on
 
     # Ensure assets use HTTPS (Optional, for extra safety)
     <IfModule mod_headers.c>
